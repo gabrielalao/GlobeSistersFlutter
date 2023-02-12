@@ -1,6 +1,7 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:globesisters/core/state_management/post_provider.dart';
 import 'package:globesisters/widgets/post_list_tile.dart';
@@ -13,6 +14,7 @@ class PostScreen extends StatefulWidget {
 
 class _PostScreenState extends State<PostScreen> {
   final TextEditingController titleCtlr = TextEditingController();
+  bool bAddBtn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +41,15 @@ class _PostScreenState extends State<PostScreen> {
                           hintStyle: const TextStyle(color: Colors.grey),
                           hintText: "Please input post title...",
                           fillColor: Colors.grey[200]),
+                      onChanged: (title) {
+                        setState(() {
+                          if (title == '') {
+                            bAddBtn = false;
+                          } else {
+                            bAddBtn = true;
+                          }
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -46,22 +57,14 @@ class _PostScreenState extends State<PostScreen> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue, // background
                       foregroundColor: Colors.white, // foreground
-                    ),
-                    onPressed: () {
-                      if (titleCtlr.text == '') {
-                        Fluttertoast.showToast(
-                            msg: "Empty post title, please input title.",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.CENTER,
-                            timeInSecForIosWeb: 1,
-                            backgroundColor: Colors.red,
-                            textColor: Colors.white,
-                            fontSize: 16.0);
-                        return;
-                      }
+                    ),                    
+                    onPressed: !bAddBtn ? null : () {
                       Provider.of<PostProvider>(context, listen: false)
                           .addNewPost(titleCtlr.text);
                       titleCtlr.clear();
+                      setState(() {
+                        bAddBtn = false;
+                      });
                     },
                     child: const Text('Post'),
                   )
